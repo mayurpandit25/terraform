@@ -6,6 +6,7 @@
     ami           = "ami-08d59269edddde222"
     instance_type = each.value
     key_name      = "ubuntu"
+    depends_on    = [aws_s3_bucket.my_s3_bucket]
 
     root_block_device {
       volume_size = var.env == "dev" ? 20 : var.volume_size
