@@ -19,7 +19,7 @@ module "ec2" {
     volume_size   = 20
     volume_type   = "gp3"
     subnet_id     = module.vpc.public_subnet_id
-    sg_id         = [ module.vpc.sg_id ]
+    sg_id         = [module.vpc.sg_id]
 
 }
 
