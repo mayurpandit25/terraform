@@ -19,142 +19,169 @@ resource "aws_s3_bucket" "my_s3_bucket" {
 
  */
 
-resource "aws_vpc" "my_vpc" {
-    cidr_block = "10.0.0.0/16"
+provider "aws" {
+  region = "ap-southeast-1"
+}
 
-    tags = {
-        Name = "my-vpc"
-    }
+
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name = "my-vpc"
+  }
 }
 
 resource "aws_subnet" "public_subnet" {
-    vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = "10.0.0.0/20"
-    availability_zone = "ap-southeast-1a"
-    tags = {
-        Name = "public-subnet"
-    }
-    map_public_ip_on_launch = true 
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.0.0/20"
+  availability_zone       = "ap-southeast-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet"
+  }
 }
 
 resource "aws_subnet" "private_subnet" {
-    vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = "10.0.16.0/20"
-    availability_zone = "ap-southeast-1b"
-    tags = {
-        Name = "private-subnet"
-    }
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = "10.0.16.0/20"
+  availability_zone = "ap-southeast-1b"
+
+  tags = {
+    Name = "private-subnet"
+  }
 }
 
 resource "aws_internet_gateway" "igw" {
-    vpc_id = aws_vpc.my_vpc.id 
+  vpc_id = aws_vpc.my_vpc.id
 
-    tags = {
-        Name = "igw"
-    }
+  tags = {
+    Name = "igw"
+  }
 }
 
 resource "aws_eip" "nat_eip" {
-    domain = "vpc"
-    tags   = {
-        Name = "nat-eip"
-    }
+  domain = "vpc"
+
+  tags = {
+    Name = "nat-eip"
+  }
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-    allocation_id = aws_eip.nat_eip.id 
-    subnet_id = aws_subnet.public_subnet.id 
-    tags = {
-        Name = "nat-gateway"
-    }
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_subnet.id
+
+  tags = {
+    Name = "nat-gateway"
+  }
 }
 
-resource "aws_route_table" "public_route_table" {
-    vpc_id = aws_vpc.my_vpc.id 
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.my_vpc.id
 
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.igw.id 
-    }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
 
-    tags = {
-        Name = "public-route-table"
-    }
+  tags = {
+    Name = "public-rt"
+  }
 }
 
-resource "aws_route_table_association" "public_rt_association" {
-    subnet_id = aws_subnet.public_subnet.id 
-    route_table_id = aws_route_table.public_route_table.id 
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_route_table" "private_route_table" {
-    vpc_id = aws_vpc.my_vpc.id 
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.my_vpc.id
 
-    route {
-        cidr_block = "0.0.0.0/0"
-        nat_gateway_id = aws_nat_gateway.nat_gateway.id 
-    }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+  }
 
-    tags = {
-        Name = "private-route-table"
-    }
+  tags = {
+    Name = "private-rt"
+  }
 }
 
-resource "aws_route_table_association" "private_rt_association" {
-    subnet_id = aws_subnet.private_subnet.id 
-    route_table_id = aws_route_table.private_route_table.id
+resource "aws_route_table_association" "private_assoc" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 resource "aws_security_group" "sg" {
-    name        = "my-security-group"
-    description = "allow ssh and http traffic"
-    vpc_id      = aws_vpc.my_vpc.id 
+  name        = "my-security-group"
+  description = "Allow SSH and HTTP"
+  vpc_id      = aws_vpc.my_vpc.id
 
-    ingress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-    tags = {
-        Name = "my-security-group"
-    } 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "my-sg"
+  }
 }
 
-resource "aws_instance" "bastion_host_server" {
-    ami           = "ami-069de344e657c5dc7"
-    instance_type = "t3.micro"
-    key_name      = "ubuntu"
-    subnet_id     = aws_subnet.public_subnet.id 
-    vpc_security_group_ids = [ aws_security_group.sg.id ]
-    user_data = <<-EOF
-                #!/bin/bash
-                sudo yum install httpd -y 
-                sudo systemctl start httpd
-                sudo echo "<h1> welcome to httpd </h1>" > /var/www/html/index.html
-                sudo systemctl restart httpd
-                sudo systemctl enable httpd
-                EOF
-    tags     = {
-        Name = "bastion-host-server"
-    }
+resource "aws_instance" "bastion_host" {
+  ami           = "ami-069de344e657c5dc7" # Amazon Linux 2 (ap-southeast-1)
+  instance_type = "t3.micro"
+  key_name      = "ubuntu"
+
+  subnet_id              = aws_subnet.public_subnet.id
+  vpc_security_group_ids = [aws_security_group.sg.id]
+
+  user_data = <<-EOF
+    #!/bin/bash
+    set -xe
+
+    yum install -y httpd
+    systemctl start httpd
+    systemctl enable httpd
+
+    echo "<h1>Welcome to Bastion Server</h1>" > /var/www/html/index.html
+  EOF
+
+  tags   = {
+    Name = "bastion-host-server"
+  }
 }
 
+# -------------------------
+# Private EC2
+# -------------------------
 resource "aws_instance" "private_server" {
-    ami           = "ami-069de344e657c5dc7"
-    instance_type = "t3.micro"
-    subnet_id     = aws_subnet.private_subnet.id 
-    vpc_security_group_ids = [ aws_security_group.sg.id ]
-    tags     = {
-        Name = "private-server"
-    }
+  ami           = "ami-069de344e657c5dc7"
+  instance_type = "t3.micro"
+
+  subnet_id              = aws_subnet.private_subnet.id
+  vpc_security_group_ids = [aws_security_group.sg.id]
+
+  tags = {
+    Name = "private-server"
+  }
 }
+
 
