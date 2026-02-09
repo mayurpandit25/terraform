@@ -135,7 +135,15 @@ resource "aws_instance" "bastion_host_server" {
     key_name      = "ubuntu"
     subnet_id     = aws_subnet.public_subnet.id 
     vpc_security_group_ids = [ aws_security_group.sg.id ]
-    user_data = file ("install_apache.sh")
+    user_data = <<-EOF
+                #!/bin/bash
+                sudo apt update -y
+                sudo apt install -y nginx
+                sudo systemctl start nginx
+                sudo echo "<h1> welcome to nginx </h1>" > /var/www/html/index.html
+                sudo systemctl restart nginx
+                sudo systemctl enable nginx
+                EOF
     tags     = {
         Name = "bastion-host-server"
     }
