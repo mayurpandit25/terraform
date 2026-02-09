@@ -7,3 +7,13 @@ resource "aws_instance" "ec2" {
         Name = "my-ec2"
     }
 }
+
+resource "aws_s3_bucket" "my_s3_bucket" {
+    bucket = "my-terraform-s3-bucket-123456789"
+    region = "ap-southeast-1"
+
+    tags   = {
+      Name = "my-terraform-s3-bucket-123456789"
+    } 
+}
+
