@@ -20,7 +20,7 @@ resource "aws_s3_bucket" "my_s3_bucket" {
  */
 
 resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
 
   tags = {
     Name = "my-vpc"
@@ -29,9 +29,9 @@ resource "aws_vpc" "my_vpc" {
 
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.0.0/20"
-  availability_zone       = "ap-southeast-1a"
-  map_public_ip_on_launch = true
+  cidr_block              = var.public_subnet
+  availability_zone       = var.public_az
+  map_public_ip_on_launch = var.public_map
 
   tags = {
     Name = "public-subnet"
@@ -40,8 +40,8 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "10.0.16.0/20"
-  availability_zone = "ap-southeast-1b"
+  cidr_block        = var.private_subnet
+  availability_zone = var.private_az
 
   tags = {
     Name = "private-subnet"
@@ -115,15 +115,15 @@ resource "aws_security_group" "sg" {
   vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = var.ingress_ssh
+    to_port     = var.ingress_ssh
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.ingress_http
+    to_port     = var.ingress_http
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -141,9 +141,9 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_instance" "bastion_host" {
-  ami           = "ami-069de344e657c5dc7" # Amazon Linux 2 (ap-southeast-1)
-  instance_type = "t3.micro"
-  key_name      = "ubuntu"
+  ami           = var.ami 
+  instance_type = var.instance_type
+  key_name      = var.key_name
 
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.sg.id]
@@ -168,8 +168,8 @@ resource "aws_instance" "bastion_host" {
 # Private EC2
 # -------------------------
 resource "aws_instance" "private_server" {
-  ami           = "ami-069de344e657c5dc7"
-  instance_type = "t3.micro"
+  ami           = var.ami 
+  instance_type = var.instance_type
 
   subnet_id              = aws_subnet.private_subnet.id
   vpc_security_group_ids = [aws_security_group.sg.id]
