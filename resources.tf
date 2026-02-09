@@ -22,6 +22,10 @@
     }
 }
 
+#########################
+CREATION OF S3 BUCKET
+#########################
+
 resource "aws_s3_bucket" "my_s3_bucket" {
     bucket = "myamazon-s3-bucket-757696969"
     region = "ap-southeast-1"
@@ -34,6 +38,20 @@ resource "aws_s3_bucket" "my_s3_bucket" {
       prevent_destroy = true 
     }
 }
+
+##########################
+USING THE OWN CREATED KEY
+##########################
+
+resource "aws_key_pair" "my_key" {
+    key_name   = "id_rsa"
+    public_key = file("/root/.ssh/id_rsa.pub")
+    }
+}
+
+#########################
+CREATION OF VPC
+#########################
 
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.vpc_cidr
@@ -125,6 +143,10 @@ resource "aws_route_table_association" "private_assoc" {
   route_table_id = aws_route_table.private_rt.id
 }
 
+#########################
+CREATION OF SECURITY GROUP 
+#########################
+
 resource "aws_security_group" "sg" {
   name        = "my-security-group"
   description = "Allow SSH and HTTP"
@@ -180,9 +202,6 @@ resource "aws_instance" "bastion_host" {
   }
 }
 
-# -------------------------
-# Private EC2
-# -------------------------
 resource "aws_instance" "private_server" {
   ami           = var.ami 
   instance_type = var.instance_type
@@ -196,3 +215,5 @@ resource "aws_instance" "private_server" {
 }
 
  */
+
+resource "aws_instance" "new_instance" {}
