@@ -216,4 +216,4 @@ resource "aws_instance" "private_server" {
 
  */
 
-resource "aws_instance" "new_instance" {}
+
