@@ -1,39 +1,3 @@
-/* resource "aws_instance" "ec2" {
-    for_each = tomap({
-        server1 = "t3.micro"
-        server2 = "t3.small"
-    })
-    ami           = "ami-08d59269edddde222"
-    instance_type = each.value
-    key_name      = "ubuntu"
-
-    root_block_device {
-      volume_size = var.env == "dev" ? 20 : var.volume_size
-      volume_type = var.env == "prod" ? "gp3" : var.volume_type
-    }
-
-    lifecycle {
-      create_before_destroy = true 
-    }
-
-    tags     = {
-        Name = each.key
-    }
-}
-
-resource "aws_s3_bucket" "my_s3_bucket" {
-    bucket = "myamazon-s3-bucket-757696969"
-    region = "ap-southeast-1"
-
-    tags   = {
-      Name = "myamazon-s3-bucket-757696969"
-    } 
-
-    lifecycle {
-      prevent_destroy = true 
-    }
-}
-
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.vpc_cidr
 
@@ -44,7 +8,7 @@ resource "aws_vpc" "my_vpc" {
 
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = var.public_subnet
+  cidr_block              = var.public_subnet_cidr
   availability_zone       = var.public_az
   map_public_ip_on_launch = var.public_map
 
@@ -55,7 +19,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = var.private_subnet
+  cidr_block        = var.private_subnet_cidr
   availability_zone = var.private_az
 
   tags = {
@@ -125,8 +89,8 @@ resource "aws_route_table_association" "private_assoc" {
 }
 
 resource "aws_security_group" "sg" {
-  name        = "my-security-group"
-  description = "Allow SSH and HTTP"
+  name        = var.sgname 
+  description = var.sgname 
   vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
@@ -155,43 +119,4 @@ resource "aws_security_group" "sg" {
   }
 }
 
-resource "aws_instance" "bastion_host" {
-  ami           = var.ami 
-  instance_type = var.instance_type
-  key_name      = var.key_name
 
-  subnet_id              = aws_subnet.public_subnet.id
-  vpc_security_group_ids = [aws_security_group.sg.id]
-
-  user_data = <<-EOF
-    #!/bin/bash
-    set -xe
-
-    yum install -y httpd
-    systemctl start httpd
-    systemctl enable httpd
-
-    echo "<h1>Welcome to Bastion Server</h1>" > /var/www/html/index.html
-  EOF
-
-  tags   = {
-    Name = "bastion-host-server"
-  }
-}
-
-# -------------------------
-# Private EC2
-# -------------------------
-resource "aws_instance" "private_server" {
-  ami           = var.ami 
-  instance_type = var.instance_type
-
-  subnet_id              = aws_subnet.private_subnet.id
-  vpc_security_group_ids = [aws_security_group.sg.id]
-
-  tags = {
-    Name = "private-server"
-  }
-}
-
- */

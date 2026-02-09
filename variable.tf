@@ -42,7 +42,6 @@ variable "key_name" {
     default = "ubuntu"  
 }
 
- */
 
 variable "volume_size" {
     default = 20
@@ -55,4 +54,4 @@ variable "volume_type" {
 variable "env" {
     default = "dev"
 }
-
+ */
