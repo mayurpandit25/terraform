@@ -130,19 +130,18 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_instance" "bastion_host_server" {
-    ami           = "ami-08d59269edddde222"
+    ami           = "ami-069de344e657c5dc7"
     instance_type = "t3.micro"
     key_name      = "ubuntu"
     subnet_id     = aws_subnet.public_subnet.id 
     vpc_security_group_ids = [ aws_security_group.sg.id ]
     user_data = <<-EOF
                 #!/bin/bash
-                sudo apt update -y
-                sudo apt install -y nginx
-                sudo systemctl start nginx
-                sudo echo "<h1> welcome to nginx </h1>" > /var/www/html/index.html
-                sudo systemctl restart nginx
-                sudo systemctl enable nginx
+                sudo yum install httpd -y 
+                sudo systemctl start httpd
+                sudo echo "<h1> welcome to httpd </h1>" > /var/www/html/index.html
+                sudo systemctl restart httpd
+                sudo systemctl enable httpd
                 EOF
     tags     = {
         Name = "bastion-host-server"
@@ -150,7 +149,7 @@ resource "aws_instance" "bastion_host_server" {
 }
 
 resource "aws_instance" "private_server" {
-    ami           = "ami-08d59269edddde222"
+    ami           = "ami-069de344e657c5dc7"
     instance_type = "t3.micro"
     subnet_id     = aws_subnet.private_subnet.id 
     vpc_security_group_ids = [ aws_security_group.sg.id ]
