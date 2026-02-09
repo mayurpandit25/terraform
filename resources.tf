@@ -105,3 +105,49 @@ resource "aws_route_table_association" "private_rt_association" {
     route_table_id = aws_route_table.private_route_table.id
 }
 
+resource "aws_security_group" "sg" {
+    name        = "my-security-group"
+    description = "allow ssh and http traffic"
+    vpc_id      = aws_vpc.my_vpc.id 
+
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "my-security-group"
+    } 
+}
+
+resource "aws_instance" "bastion_host_server" {
+    ami           = "ami-08d59269edddde222"
+    instance_type = "t3.micro"
+    key_name      = "ubuntu"
+    subnet_id     = aws_subnet.public_subnet.id 
+    vpc_security_group_ids = [ aws_security_group.sg.id ]
+    user_data = file ("install_apache.sh")
+    tags     = {
+        Name = "bastion-host-server"
+    }
+}
+
+resource "aws_instance" "private_server" {
+    ami           = "ami-08d59269edddde222"
+    instance_type = "t3.micro"
+    subnet_id     = aws_subnet.private_subnet.id 
+    vpc_security_group_ids = [ aws_security_group.sg.id ]
+    tags     = {
+        Name = "private-server"
+    }
+}
+
