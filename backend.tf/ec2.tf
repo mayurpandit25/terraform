@@ -1,11 +1,11 @@
 resource "aws_instance" "ec2" {
-    ami           = "ami-08d59269edddde222"
-    instance_type = "t3.micro"
-    key_name      = "ubuntu"
+    ami           = var.ami 
+    instance_type = var.instance_type
+    key_name      = var.key_name
 
     root_block_device {
-      volume_size = 20
-      volume_type = "gp3"
+      volume_size = var.volume_size
+      volume_type = var.volume_type
     }
 
     lifecycle {
@@ -16,5 +16,6 @@ resource "aws_instance" "ec2" {
         Name = "ec2-instance"
     }
 }
+
 
 
