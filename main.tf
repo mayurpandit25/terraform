@@ -18,7 +18,7 @@ module "ec2" {
     key_name      = "ubuntu"
     volume_size   = 20
     volume_type   = "gp3"
-    cbd           = true 
     subnet_id     = module.vpc.public_subnet_id
+    
 }
 

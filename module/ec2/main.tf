@@ -20,7 +20,7 @@ resource "aws_instance" "ec2" {
     }
 
     lifecycle {
-      create_before_destroy = var.cbd
+      create_before_destroy = true 
     }
 
     tags     = {
