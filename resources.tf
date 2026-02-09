@@ -1,14 +1,27 @@
-/* resource "aws_instance" "ec2" {
+resource "aws_instance" "ec2" {
+    for_each = tomap({
+        server1 = "t3.micro"
+        server2 = "t3.small"
+    })
     ami           = "ami-08d59269edddde222"
-    instance_type = "t3.micro"
+    instance_type = each.value
     key_name      = "ubuntu"
-    count         = 2
+
+    root_block_device {
+      volume_size = var.env == "dev" ? 20 : var.volume_size
+      volume_type = var.env == "prod" ? "gp3" : var.volume_type
+    }
+
+    lifecycle {
+      create_before_destroy = true 
+    }
+
     tags     = {
-        Name = "my-ec2"
+        Name = each.key
     }
 }
 
-resource "aws_s3_bucket" "my_s3_bucket" {
+/* resource "aws_s3_bucket" "my_s3_bucket" {
     bucket = "myamazon-s3-bucket-757696969"
     region = "ap-southeast-1"
 
@@ -16,8 +29,6 @@ resource "aws_s3_bucket" "my_s3_bucket" {
       Name = "myamazon-s3-bucket-757696969"
     } 
 }
-
- */
 
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.vpc_cidr
@@ -180,3 +191,4 @@ resource "aws_instance" "private_server" {
 }
 
 
+ */

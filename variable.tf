@@ -1,4 +1,4 @@
-variable "vpc_cidr" {
+/* variable "vpc_cidr" {
     default = "10.0.0.0/16"
 }
 
@@ -40,5 +40,19 @@ variable "instance_type" {
 
 variable "key_name" {
     default = "ubuntu"  
+}
+
+ */
+
+variable "volume_size" {
+    default = 20
+}
+
+variable "volume_type" {
+    default = "gp3"
+}
+
+variable "env" {
+    default = "dev"
 }
 
