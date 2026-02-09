@@ -217,3 +217,11 @@ resource "aws_instance" "private_server" {
  */
 
 
+resource "aws_instance" "old" {
+  ami           = "ami-08d59269edddde222"
+  instance_type = "t3.micro"
+  tags   = {
+    Name = "old" 
+  }
+}
+
