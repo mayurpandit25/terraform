@@ -31,7 +31,7 @@ variable "ingress_ssh" {
 }
 
 variable "ami" {
-  default = "ami-069de344e657c5dc7"
+  default = "ami-0e1263079791a10fc"
 }
 
 variable "instance_type" {

@@ -185,17 +185,7 @@ resource "aws_instance" "bastion_host" {
 
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.sg.id]
-
-  user_data = <<-EOF
-    #!/bin/bash
-    set -xe
-
-    yum install -y httpd
-    systemctl start httpd
-    systemctl enable httpd
-
-    echo "<h1>Welcome to Bastion Server</h1>" > /var/www/html/index.html
-  EOF
+  user_data              = file("install_nginx.sh")
 
   tags   = {
     Name = "bastion-host-server"
@@ -214,7 +204,6 @@ resource "aws_instance" "private_server" {
   }
 }
 
- */
 
 ################       
 # DATA BLOCK 
@@ -245,3 +234,4 @@ resource "aws_instance" "myserver" {
   }
 }
 
+*/
