@@ -238,6 +238,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "myserver" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
+  user_data     = file("install_nginx.sh")
 
   tags = {
     Name = "myserver"
