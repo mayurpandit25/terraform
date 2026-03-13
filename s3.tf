@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "s3_bucket" {
+/* resource "aws_s3_bucket" "s3_bucket" {
     region = "ap-south-1"
     bucket = "mayur-s3-bucket-amazon1232"
 
@@ -6,3 +6,4 @@ resource "aws_s3_bucket" "s3_bucket" {
         Name = "mayur-s3-bucket-amazon1232"
     }
 }
+ */
