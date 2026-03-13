@@ -4,7 +4,7 @@ resource "aws_instance" "public_instance" {
     key_name = "id_rsa"
     vpc_security_group_ids = [aws_security_group.sg.id]
     user_data=<<-EOF
-              #/bin/bash
+              #!/bin/bash
               sudo apt update 
               sudo apt install apache2 -y
               sudo systemctl start apache2
@@ -14,4 +14,4 @@ resource "aws_instance" "public_instance" {
     tags = {
         Name = "ubuntu"
     } 
-} 
+}
