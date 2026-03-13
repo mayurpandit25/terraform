@@ -9,6 +9,8 @@ resource "aws_instance" "public_instance" {
     key_name = "id_rsa"
     vpc_security_group_ids = [aws_security_group.sg.id]
     user_data = file("/root/terraform/user_data.sh")
+    depends_on = [ aws_security_group.sg ]
+    # count = 2
 
     root_block_device {
       volume_size = 10
