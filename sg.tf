@@ -1,11 +1,11 @@
-resource "aws_vpc" "default" {
-  cidr_block = "10.0.0.0/16"
+data "aws_vpc" "default" {
+  default = true
 }
 
 resource "aws_security_group" "sg" {
     name = "my-sg-group"
     description = "these is my security group"
-    vpc_id = aws_vpc.default.id 
+    vpc_id = data.aws_vpc.default.id 
 
     ingress {
         from_port = 80
