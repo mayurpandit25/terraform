@@ -2,6 +2,10 @@
     region = "ap-south-1"
     bucket = "mayur-s3-bucket-amazon1232"
 
+    lifecycle {
+      prevent_destroy = true
+    }
+
     tags = {
         Name = "mayur-s3-bucket-amazon1232"
     }
