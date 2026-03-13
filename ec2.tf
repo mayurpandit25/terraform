@@ -13,8 +13,8 @@ resource "aws_instance" "public_instance" {
     # count = 2
 
     root_block_device {
-      volume_size = 10
-      volume_type = "gp3"
+      volume_size = var.env == "dev" ? 20 : var.volume_size
+      volume_type = var.env == "prod" ? "gp2" : var.volume_type
     }
 
     tags = {
