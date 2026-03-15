@@ -1,5 +1,5 @@
-/* resource "aws_vpc" "my_vpc" {
-    cidr_block = var.vpc
+resource "aws_vpc" "my_vpc" {
+    cidr_block = var.vpc_cidr
     tags = {
         Name = "my_vpc"
     }
@@ -7,7 +7,7 @@
 
 resource "aws_subnet" "public_subnet" {
     vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = var.public_subnet
+    cidr_block = var.public_subnet_cidr
     availability_zone = var.public_az
     map_public_ip_on_launch = true 
     tags = {
@@ -17,7 +17,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
     vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = var.private_subnet
+    cidr_block = var.private_subnet_cidr
     availability_zone = var.private_az
     tags = {
         Name = "private_subnet"
@@ -82,29 +82,7 @@ resource "aws_route_table_association" "private_rt_assoc" {
     route_table_id = aws_route_table.private_rt.id
 }
 
-resource "aws_instance" "public_instance" {
-    ami = var.ami
-    instance_type = var.instance_type
-    vpc_security_group_ids = [aws_security_group.sg.id]
-    user_data = file("/root/terraform/user_data.sh")
-    subnet_id = aws_subnet.public_subnet.id
-    associate_public_ip_address = true
-    tags = {
-        Name = "public_instance"
-    }
-}
-
-resource "aws_instance" "private_instance" {
-    ami = var.ami
-    instance_type = var.instance_type
-    vpc_security_group_ids = [aws_security_group.sg.id]
-    subnet_id = aws_subnet.private_subnet.id
-    tags = {
-        Name = "private_instance"
-    }
-}
 
 
 
 
- */
