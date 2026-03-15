@@ -1,5 +1,5 @@
 resource "aws_vpc" "my_vpc" {
-    cidr_block = "10.0.0.0/16"
+    cidr_block = var.vpc
     tags = {
         Name = "my_vpc"
     }
@@ -7,8 +7,8 @@ resource "aws_vpc" "my_vpc" {
 
 resource "aws_subnet" "public_subnet" {
     vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = "10.0.0.0/20"
-    availability_zone = "ap-south-1a"
+    cidr_block = var.public_subnet
+    availability_zone = var.public_az
     map_public_ip_on_launch = true 
     tags = {
         Name = "public_subnet"
@@ -17,8 +17,8 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
     vpc_id = aws_vpc.my_vpc.id 
-    cidr_block = "10.0.16.0/20"
-    availability_zone = "ap-south-1b"
+    cidr_block = var.private_subnet
+    availability_zone = var.private_az
     tags = {
         Name = "private_subnet"
     }
@@ -83,8 +83,8 @@ resource "aws_route_table_association" "private_rt_assoc" {
 }
 
 resource "aws_instance" "public_instance" {
-    ami = "ami-019715e0d74f695be"
-    instance_type = "t3.micro"
+    ami = var.ami
+    instance_type = var.instance_type
     vpc_security_group_ids = [aws_security_group.sg.id]
     user_data = file("/root/terraform/user_data.sh")
     subnet_id = aws_subnet.public_subnet.id
@@ -95,8 +95,8 @@ resource "aws_instance" "public_instance" {
 }
 
 resource "aws_instance" "private_instance" {
-    ami = "ami-019715e0d74f695be"
-    instance_type = "t3.micro"
+    ami = var.ami
+    instance_type = var.instance_type
     vpc_security_group_ids = [aws_security_group.sg.id]
     subnet_id = aws_subnet.private_subnet.id
     tags = {
