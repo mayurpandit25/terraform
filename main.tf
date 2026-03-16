@@ -1,4 +1,4 @@
-module "vpc" {
+/* module "vpc" {
     source = "./module/vpc"
     vpc_cidr = var.vpc_cidr
     public_subnet_cidr  = var.public_subnet_cidr
@@ -24,5 +24,4 @@ module "ec2" {
     private_subnet = module.vpc.private_subnet_id
 }
 
-
-
+ */

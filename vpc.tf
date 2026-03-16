@@ -104,7 +104,4 @@ resource "aws_instance" "private_instance" {
     }
 }
 
-
-
-
  */

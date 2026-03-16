@@ -26,7 +26,6 @@ variable "instance_type" {
     default = "t3.micro"
 }
 
- */
 
 variable "vpc_cidr" {}
 variable "public_subnet_cidr" {}
@@ -40,3 +39,5 @@ variable "ingress_ssh" {}
 
 variable "ami" {}
 variable "instance_type" {}
+
+ */

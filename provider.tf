@@ -3,7 +3,7 @@ provider "aws" {
     profile = "config"
 }
 
-terraform {
+/* terraform {
   backend "s3" {
     bucket = "amazon-s3-bucket-mayur121"
     key = "terraform.tfstate"
@@ -12,4 +12,4 @@ terraform {
     shared_credentials_files = [ "/root/.aws/credentials" ]
     dynamodb_table = "cbz"
   }
-}
+} */
