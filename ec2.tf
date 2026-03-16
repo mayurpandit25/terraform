@@ -31,12 +31,5 @@
 }
  */
 
-resource "aws_instance" "default" {
-  ami = "ami-019715e0d74f695be"
-  instance_type = "t3.micro"
 
-  tags = {
-    Name = "default"
-  }
-}
 
