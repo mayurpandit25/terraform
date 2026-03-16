@@ -31,5 +31,14 @@
 }
  */
 
+resource "aws_instance" "old" {
+  ami = ""
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "old"
+  }
+}
+
 
 
